@@ -1,0 +1,17 @@
+{
+  "name": "brutto-netto-rechner",
+  "version": "1.0.0",
+  "description": "Microservice für Brutto-Netto-Berechnungen",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@finanzfluss/calculators": "^1.0.0",
+    "express": "^4.21.0",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
