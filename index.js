@@ -19,43 +19,36 @@ app.get('/health', (req, res) => {
 // Brutto-Netto Berechnung
 app.post('/brutto-netto', (req, res) => {
   try {
-    const {
-      year,
-      steuerklasse,
-      bundesland,
-      kirchensteuer,
-      jahrgang,
-      kinder,
-      zusatzbeitrag,
-      bruttoListe,
-    } = req.body;
+    const body = req.body;
 
-    // Validierung
+    // bruttoListe validieren
+    const bruttoListe = body.bruttoListe;
     if (!bruttoListe || !Array.isArray(bruttoListe) || bruttoListe.length === 0) {
       return res.status(400).json({
         error: 'bruttoListe (Array) fehlt oder ist leer.'
       });
     }
 
-    // Basis-Input für alle Berechnungen
+    // Alle Parameter mit Defaults (0 wenn nicht angegeben)
+    // Unterstützt sowohl deutsche Namen als auch Original-Namen
     const baseInput = {
-      inputAccountingYear: String(year || new Date().getFullYear()),
-      inputTaxClass: steuerklasse,
-      inputTaxAllowance: 0,
-      inputChurchTax: kirchensteuer ? 1 : 0,
-      inputState: bundesland,
-      inputYearOfBirth: jahrgang,
-      inputChildren: kinder || 0,
-      inputChildTaxAllowance: 0,
-      inputPkvContribution: 0,
-      inputEmployerSubsidy: 0,
-      inputPensionInsurance: 0,
-      inputLevyOne: 0,
-      inputLevyTwo: 0,
-      inputActivateLevy: 0,
-      inputHealthInsurance: zusatzbeitrag || 0,
-      inputAdditionalContribution: 0,
-      inputPeriod: 2, // monatlich
+      inputAccountingYear: String(body.year || body.inputAccountingYear || new Date().getFullYear()),
+      inputTaxClass: body.steuerklasse ?? body.inputTaxClass ?? 1,
+      inputTaxAllowance: body.freibetrag ?? body.inputTaxAllowance ?? 0,
+      inputChurchTax: body.kirchensteuer ?? body.inputChurchTax ?? 0,
+      inputState: body.bundesland || body.inputState || 'Hamburg',
+      inputYearOfBirth: body.jahrgang ?? body.inputYearOfBirth ?? 1990,
+      inputChildren: body.kinder ?? body.inputChildren ?? 0,
+      inputChildTaxAllowance: body.kinderfreibetrag ?? body.inputChildTaxAllowance ?? 0,
+      inputPkvContribution: body.pkvBeitrag ?? body.inputPkvContribution ?? 0,
+      inputEmployerSubsidy: body.arbeitgeberzuschuss ?? body.inputEmployerSubsidy ?? 0,
+      inputPensionInsurance: body.rentenversicherung ?? body.inputPensionInsurance ?? 0,
+      inputLevyOne: body.umlage1 ?? body.inputLevyOne ?? 0,
+      inputLevyTwo: body.umlage2 ?? body.inputLevyTwo ?? 0,
+      inputActivateLevy: body.umlageAktiv ?? body.inputActivateLevy ?? 0,
+      inputHealthInsurance: body.zusatzbeitrag ?? body.inputHealthInsurance ?? 0,
+      inputAdditionalContribution: body.zusatzbeitragExtra ?? body.inputAdditionalContribution ?? 0,
+      inputPeriod: body.periode ?? body.inputPeriod ?? 2, // 2 = monatlich
     };
 
     // Berechnung für jedes Brutto in der Liste
