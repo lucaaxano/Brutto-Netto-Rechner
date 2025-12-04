@@ -46,8 +46,8 @@ app.post('/brutto-netto', (req, res) => {
       inputLevyOne: body.umlage1 ?? body.inputLevyOne ?? 0,
       inputLevyTwo: body.umlage2 ?? body.inputLevyTwo ?? 0,
       inputActivateLevy: body.umlageAktiv ?? body.inputActivateLevy ?? 0,
-      inputHealthInsurance: body.zusatzbeitrag ?? body.inputHealthInsurance ?? 0,
-      inputAdditionalContribution: body.zusatzbeitragExtra ?? body.inputAdditionalContribution ?? 0,
+      inputHealthInsurance: body.versicherungsart ?? body.inputHealthInsurance ?? 0,  // 0=GKV, 1=PKV, -1=freiwillig
+      inputAdditionalContribution: body.zusatzbeitrag ?? body.inputAdditionalContribution ?? 1.7,  // GKV-Zusatzbeitrag in %
       inputPeriod: body.periode ?? body.inputPeriod ?? 2, // 2 = monatlich
     };
 
@@ -64,9 +64,15 @@ app.post('/brutto-netto', (req, res) => {
         brutto,
         nettoMonat: r.outputResNetWageMonth,
         nettoJahr: r.outputResNetWageYear,
-        lohnsteuerMonat: r.outputResWageTaxMonth,
-        soliMonat: r.outputResSolzWageTaxMonth,
+        lohnsteuerMonat: r.outputResIncomeTaxMonth,
+        soliMonat: r.outputResSolidaritySurchargeMonth,
         kirchensteuerMonat: r.outputResChurchTaxMonth,
+        steuernGesamt: r.outputTotalTaxes,
+        krankenversicherungMonat: r.outputResHealthInsuranceMonth,
+        pflegeversicherungMonat: r.outputResCareInsuranceMonth,
+        rentenversicherungMonat: r.outputResPensionInsuranceMonth,
+        arbeitslosenversicherungMonat: r.outputResUnemploymentInsuranceMonth,
+        sozialabgabenGesamt: r.outputTotalInsurances,
       };
     });
 
